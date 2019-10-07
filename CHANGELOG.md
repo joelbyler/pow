@@ -4,10 +4,11 @@
 
 * Changed minmum password length to 8 (OWASP/NIST recommendations)
 * Fixed bug where `Pow.Store.CredentialsCache` wasn't used due to how `Pow.Store.Base` macro worked
-* `Pow.Plug.Session` now stores a keyword list with metadata for the session rather than just the timestamp
-* `Pow.Plug.Session` now adds a fingerprint for new sessions that will persist when sessions are renewed
-* `Pow.Plug.Session` assigns private key `:pow_session_metadata` in the conn as a keyword list with `:fingerprint` containing the session fingerprint value when fetching session, and fetches this value when creating sessions
-* `PowPersistentSession.Plug.Cookie` will record the value of `:fingerprint` in the `:pow_session_metadata` if it exists in conn private, and will assign it to the conn if `:session_fingerprint` exists for the persistent session metadata
+* `Pow.Plug.Session.create/3` now stores a keyword list with metadata for the session rather than just a timestamp
+* `Pow.Plug.Session.fetch/2` and `Pow.Plug.Session.create/3` now assigns `:pow_session_metadata` in `conn.private` with the session metadata
+* `Pow.Plug.Session.create/3` will use the metadata found in `conn.private[:pow_session_metadata]` if it exists and otherwise add a randomly unique id for `:fingerprint`
+* `PowPersistentSession.Plug.Cookie.create/3` will use the value of `conn.private[:pow_session_metadata][:fingerprint]` if it exists as `:session_fingerprint` in the persistent session metadata
+* `PowPersistentSession.Plug.Cookie.authenticate/2` will assign `:fingerprint` to `conn.private[:pow_session_metadata]` if it exists in the persistent session metadata
 
 ## v1.0.13 (2019-08-25)
 
